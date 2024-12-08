@@ -13,44 +13,63 @@ import { logger } from './utils/logger.js';
 dotenv.config();
 validateEnv();
 
-// Initialize express app
-const app = express();
-const httpServer = createServer(app);
+const startServer = async () => {
+  try {
+    // Initialize express app
+    const app = express();
+    const httpServer = createServer(app);
 
-// Configure app middleware
-configureApp(app);
+    // Configure app middleware
+    configureApp(app);
 
-// Connect to MongoDB
-connectDB();
+    // Connect to MongoDB
+    await connectDB();
 
-// Initialize Socket.IO
-const io = initializeSocket(httpServer);
+    // Initialize Socket.IO
+    const io = initializeSocket(httpServer);
 
-// Add io to request object
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+    // Add io to request object
+    app.use((req, res, next) => {
+      req.io = io;
+      next();
+    });
 
-// Configure routes
-configureRoutes(app);
+    // Configure routes
+    configureRoutes(app);
 
-// Error handler
-app.use(errorHandler);
+    // Error handler
+    app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+    const PORT = process.env.PORT || 3000;
+    httpServer.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+    });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  logger.error(`Unhandled Promise Rejection: ${err.message}`);
-  httpServer.close(() => process.exit(1));
-});
+    // Graceful shutdown
+    const shutdown = async () => {
+      logger.info('Shutting down server...');
+      await new Promise((resolve) => httpServer.close(resolve));
+      process.exit(0);
+    };
 
-// Handle uncaught exceptions
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+
+  } catch (error) {
+    logger.error(`Server initialization error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+// Handle uncaught exceptions and rejections
 process.on('uncaughtException', (err) => {
   logger.error(`Uncaught Exception: ${err.message}`);
   process.exit(1);
 });
+
+process.on('unhandledRejection', (err) => {
+  logger.error(`Unhandled Promise Rejection: ${err.message}`);
+  process.exit(1);
+});
+
+startServer();

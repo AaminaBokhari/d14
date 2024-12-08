@@ -17,3 +17,7 @@
 {"level":"info","message":"MongoDB Connected: cluster0-shard-00-00.bdose.mongodb.net","timestamp":"2024-12-07T23:06:39.550Z"}
 {"level":"info","message":"Server running on port 3000","timestamp":"2024-12-07T23:15:10.610Z"}
 {"level":"info","message":"MongoDB Connected: cluster0-shard-00-00.bdose.mongodb.net","timestamp":"2024-12-07T23:15:11.824Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2024-12-07T23:53:06.003Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2024-12-07T23:53:23.006Z"}
+{"level":"error","message":"Login error: Operation `users.findOne()` buffering timed out after 10000ms","timestamp":"2024-12-07T23:57:05.107Z"}
+{"level":"error","message":"Login error: Operation `users.findOne()` buffering timed out after 10000ms","timestamp":"2024-12-08T00:00:41.897Z"}
